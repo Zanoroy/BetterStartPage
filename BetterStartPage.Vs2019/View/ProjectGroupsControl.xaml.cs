@@ -7,6 +7,7 @@ namespace BetterStartPage.View
 {
     public partial class ProjectGroupsControl
     {
+
         public ProjectGroupsControl()
         {
             InitializeComponent();

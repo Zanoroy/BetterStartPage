@@ -23,14 +23,14 @@ namespace BetterStartPage
     [Guid(PackageGuidString)]
     public sealed class BetterStartPagePackage : AsyncPackage
     {
+        
         private const string PackageGuidString = "5ef73784-ad19-4cae-ae6d-27a822e33a01";
 
         private const string GetToCodePackageGuidString = "D208A515-B37C-4F88-AC23-F3727FE307BD";
 
         private const string GetToCodeCmdSetGuidString = "7c57081e-4f31-4ebf-a96f-4769e1d688ec";
         private const int ShowStartWindowCommand = 288;
-
-
+        
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
@@ -70,7 +70,8 @@ namespace BetterStartPage
                 QuickStartWindow.DialogCreated += (s,e) => QuickStartWindow.Instance?.PatchDialog();
                 if (QuickStartWindow.Instance == null)
                 {
-                    showStartWindowCommand?.Invoke();
+                    if(!dte.Solution.IsOpen && dte.Documents.Count == 0)
+                        showStartWindowCommand?.Invoke();
                 }
                 else
                 {

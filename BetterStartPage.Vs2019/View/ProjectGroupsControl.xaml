@@ -14,6 +14,7 @@
     d:DesignWidth="400"
     Background="Transparent"
     mc:Ignorable="d">
+    <!-- md:DialogServiceViews.IsRegistered="True" -->
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -328,6 +329,18 @@
                                                 </MenuItem.Icon>
                                             </MenuItem>
 
+                                            <MenuItem Header="Add Directory projects to group"
+                                                      Command="{Binding DataContext.AddDirectoryToGroupCommand, Source={view:RootObject}}"
+                                                      CommandParameter="{Binding}">
+                                                <MenuItem.Icon>
+                                                    <Viewbox Width="16" Height="16">
+                                                        <Canvas Width="24" Height="24">
+                                                            <Path Data="{StaticResource AddProjectIcon}" />
+                                                        </Canvas>
+                                                    </Viewbox>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            
                                             <MenuItem Header="Rename group"
                                                       Command="{Binding DataContext.RenameGroupCommand, Source={view:RootObject}}"
                                                       CommandParameter="{Binding}">

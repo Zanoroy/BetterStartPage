@@ -137,7 +137,7 @@ namespace BetterStartPage.View
             }
 
             var mainWindow = Application.Current?.MainWindow;
-            if (mainWindow != null && mainWindow != _instance && mainWindow.Visibility == Visibility.Visible)
+            if (mainWindow != null && mainWindow.WindowState != WindowState.Maximized && mainWindow != _instance && mainWindow.Visibility == Visibility.Visible)
             {
                 _instance.Left = mainWindow.Left + (mainWindow.ActualWidth - _instance.Width) / 2;
                 _instance.Top = mainWindow.Top + (mainWindow.ActualHeight - _instance.Height) / 2;

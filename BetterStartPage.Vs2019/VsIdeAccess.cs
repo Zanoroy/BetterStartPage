@@ -95,7 +95,7 @@ namespace BetterStartPage
 
         public bool ShowDeleteConfirmation(string text)
         {
-            return MessageBox.Show(text, "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question,
+            return MessageBox.Show(text, "Confirm Remove", MessageBoxButton.YesNo, MessageBoxImage.Question,
                 MessageBoxResult.No) == MessageBoxResult.Yes;
         }
 

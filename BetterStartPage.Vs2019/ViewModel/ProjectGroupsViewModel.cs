@@ -23,6 +23,7 @@ namespace BetterStartPage.Control.ViewModel
 
     internal class ProjectGroupsViewModel : ViewModelBase
     {
+
         private readonly IIdeAccess _ideAccess;
         private int _groupColumns;
         private ObservableCollection<ProjectGroup> _groups;
@@ -110,7 +111,7 @@ namespace BetterStartPage.Control.ViewModel
         public ICommand MoveGroupUpCommand { get; }
         public ICommand MoveGroupDownCommand { get; }
         public ICommand AddProjectsToGroupCommand { get; }
-
+        public ICommand AddDirectoryToGroupCommand { get; }
         public ICommand AddProjectsCommand { get; }
         public ICommand RenameProjectCommand { get; }
         public ICommand DeleteProjectCommand { get; }
@@ -140,7 +141,7 @@ namespace BetterStartPage.Control.ViewModel
             MoveGroupUpCommand = new RelayCommand<ProjectGroup>(MoveGroupUp);
             MoveGroupDownCommand = new RelayCommand<ProjectGroup>(MoveGroupDown);
             AddProjectsToGroupCommand = new RelayCommand<ProjectGroup>(AddProjectsToGroup);
-
+            AddDirectoryToGroupCommand = new RelayCommand<ProjectGroup>(AddDirectoryProjectsToGroup);
             AddProjectsCommand = new RelayCommand<FilesDroppedEventArgs>(AddProjects);
             RenameProjectCommand = new RelayCommand<Project>(RenameProject);
             DeleteProjectCommand = new RelayCommand<Project>(DeleteProject);
@@ -269,9 +270,12 @@ namespace BetterStartPage.Control.ViewModel
                     InternalDeleteProject(project);
                 }
             }
-            else if (project.IsNormalFile)
+            else if (project.IsNormalFile) // means NOT a solution file.
             {
-                _ideAccess.OpenFile(project.FullName);
+                if(Directory.Exists(project.FullName))
+                    _ideAccess.OpenProject(project.FullName);
+                else
+                    _ideAccess.OpenFile(project.FullName);
             }
             else
             {
@@ -359,7 +363,7 @@ namespace BetterStartPage.Control.ViewModel
         private void DeleteProject(Project project)
         {
             if (_ideAccess.ShowDeleteConfirmation(
-                $"Are you sure you want to delete '{project.FullName}'?"))
+                $"Are you sure you want to remove '{project.FullName}' from the list?"))
             {
                 InternalDeleteProject(project);
             }
@@ -401,6 +405,17 @@ namespace BetterStartPage.Control.ViewModel
             }
         }
 
+        private void AddDirectoryProjectsToGroup(ProjectGroup group)
+        {
+            var dlg = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+            dlg.Description = "Select Project folder";
+            if (dlg.ShowDialog(Application.Current.MainWindow).GetValueOrDefault())
+            {
+                AddProjects(group, new string[] { dlg.SelectedPath });
+            }
+
+        }
+
         private void MoveGroupDown(ProjectGroup group)
         {
             int index = _groups.IndexOf(group);
@@ -423,7 +438,7 @@ namespace BetterStartPage.Control.ViewModel
         private void DeleteGroup(ProjectGroup group)
         {
             if (_ideAccess.ShowDeleteConfirmation(
-                $"Are you sure you want to delete '{group.Title}'?"))
+                $"Are you sure you want to remove '{group.Title}'?"))
             {
                 _groups.Remove(group);
             }

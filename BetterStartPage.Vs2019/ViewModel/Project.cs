@@ -45,7 +45,7 @@ namespace BetterStartPage.Control.ViewModel
             get
             {
                 // show full name if a custom name is set
-                if (!string.IsNullOrWhiteSpace(CustomName))
+                if (!string.IsNullOrWhiteSpace(CustomName) || System.IO.Directory.Exists(FullName))
                 {
                     return FullName;
                 }
@@ -96,6 +96,34 @@ namespace BetterStartPage.Control.ViewModel
         public Project(string fullName)
         {
             FullName = fullName;
+
+
+            // Check to see if this project is a directory, then see if it contains a CMakeLists.txt file, extract the 'Project' name and populate the CustomName field.
+            // Check if there is a CMakelist.txt file
+            // get the file attributes for file or directory
+            FileAttributes attr = File.GetAttributes(fullName);
+            //detect whether its a directory or file
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                if (File.Exists(Path.Combine(fullName, "CMakeLists.txt")))
+                {
+                    string result = string.Empty;
+                    var lines = File.ReadAllLines(Path.Combine(fullName, "CMakeLists.txt"));
+                    foreach (var line in lines)
+                    {
+                        if (line.ToLower().Contains("project("))
+                        {
+                            var text = line.Substring(line.IndexOf("(") + 1, line.LastIndexOf(")") - line.IndexOf("(") - 1);
+                            text = text.TrimStart();
+
+                            if (text.Contains(" ")) // we only want the Project name, not the possible extra properties cMake uses.
+                                text = text.Substring(0, text.IndexOf(" ")).Trim();
+
+                            CustomName= string.Format("{0} (CMakeLists.txt)", text);
+                        }
+                    }
+                }
+            }
         }
     }
 }
